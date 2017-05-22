@@ -1,16 +1,14 @@
 import React, { Component } from 'react';
 import Header from './components/Header'
+import FormInput from './components/FormInput'
+import registrationStore from './stores/RegistrationStore'
 
 class App extends Component {
   constructor(props){
     super(props)
     this.state={
-      registration: {
-        firstName:'',
-        lastName:'',
-        email:'',
-        password:''
-      }
+      registration: registrationStore.getFields(),
+      errors: {}
     }
   }
 
@@ -23,9 +21,20 @@ class App extends Component {
     })
   }
 
+  validate(){
+    registrationStore.validate()
+    this.setState({errors: registrationStore.getErrors()})
+  }
+
   handleSubmit(event){
     event.preventDefault()
+    this.validate()
     console.log(this.state.registration)
+  }
+
+//if we have errors, the isValid method should return false
+  isValid(){
+    return Object.keys(this.state.errors).length === 0
   }
 
   render() {
@@ -37,82 +46,65 @@ class App extends Component {
             <div className='col-xs-6 col-xs-offset-3'>
               <div className='panel panel-default'>
                 <div className='panel-body'>
+                  { !this.isValid() &&
+                    <div className='alert alert-danger'>
+                      Please verify that all fields are filled in below.
+                    </div>
+                  }
                   <h3>Registration</h3>
                   <form onSubmit={this.handleSubmit.bind(this)}>
+
                     <div className='row'>
                       <div className='col-xs-12'>
-                        <div className='form-group'> 
-                          <label 
-                            htmlFor='firstName'
-                            className='control-label'
-                          >
-                            First Name
-                          </label>
-                          <input
+                          <FormInput
                             name='firstName'
                             value={this.state.registration.firstName}
                             onChange={this.handleChange.bind(this)}
                             className='form-control'
+                            label='Fist Name'
+                            errors={this.state.errors.firstName}
                           />
-                        </div>
+
                       </div>
                     </div>
 
                     <div className='row'>
                       <div className='col-xs-12'>
-                        <div className='form-group'>
-                          <label 
-                            htmlFor='lastName'
-                            className='control-label'
-                          >
-                            Last Name
-                          </label>
-                          <input
+                          <FormInput
                             name='lastName'
                             value={this.state.registration.lastName}
                             onChange={this.handleChange.bind(this)}
                             className='form-control'
+                            label='Last Name'
+                            errors={this.state.errors.lastName}
                           />
-                        </div>
                       </div>
                     </div>
 
                     <div className='row'>
                       <div className='col-xs-12'>
-                        <div className='form-group'>
-                          <label 
-                            htmlFor='email'
-                            className='control-label'
-                          >
-                            Email
-                          </label>
-                          <input
+                          <FormInput
                             name='email'
                             value={this.state.registration.email}
                             onChange={this.handleChange.bind(this)}
                             className='form-control'
+                            label='Email'
+                            errors={this.state.errors.email}
                           />
-                        </div>
                       </div>
                     </div>
 
                     <div className='row'>
                       <div className='col-xs-12'>
-                        <div className='form-group'>
-                          <label 
-                            htmlFor='password'
-                            className='control-label'
-                          >
-                            Password
-                          </label>
-                          <input
+                          <FormInput
                             type='password'
                             name='password'
                             value={this.state.registration.password}
                             onChange={this.handleChange.bind(this)}
                             className='form-control'
+                            label='Password'
+                            errors={this.state.errors.password}
                           />
-                        </div>
                       </div>
                     </div>
 
