@@ -4,13 +4,20 @@ class FormInput extends Component {
   constructor(props){
     super(props)
     this.state={
+  //this.props.type looks at where FormInput is called in App.js. If type is specified, do that, otherwise the type is text
       type: this.props.type || 'text'
     }
   }
 
+    //form-group and has-error are bootstrap classes. If this.props.erros is true it will assign the has-error class*/}
+
+    //htmlFor is when you click on the label the cursor will go into the textbox*/}
+
   render(){
     return(
+
     <div className={`form-group ${this.props.errors && 'has-error'}`}>
+
       <label
         htmlFor={this.props.name}
         className='control-label'

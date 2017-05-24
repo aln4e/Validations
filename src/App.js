@@ -2,9 +2,11 @@ import React, { Component } from 'react';
 import Header from './components/Header'
 import FormInput from './components/FormInput'
 import registrationStore from './stores/RegistrationStore'
+import {createField, submitForm} from './actions/RegistrationStoreActions'
 
 class App extends Component {
   constructor(props){
+    //super(props) is a function from the Component
     super(props)
     this.state={
       registration: registrationStore.getFields(),
@@ -12,23 +14,39 @@ class App extends Component {
     }
   }
 
+//1. handleChange() forces the createField ACTION
   handleChange(event){
     const target = event.target
-    const registration = this.state.registration
-    registration[target.name] = target.value
+    createField(target.name, target.value)
+  }
+
+//6. Finally, we setState and rerender with the updates.
+  handleStateChange() {
     this.setState({
-      registration: registration
+      registration: registrationStore.getFields()
     })
   }
 
+  handleFormSubmission() {
+    this.setState({
+      errors: registrationStore.getErrors()
+    })
+  }
+
+//5. the app is waiting for change emissions from the store, and it triggers the handleStateChange method above.
+  componentWillMount(){
+    registrationStore.on('CHANGE', this.handleStateChange.bind(this))
+    registrationStore.on('SUBMIT', this.handleFormSubmission.bind(this))
+  }
+
   validate(){
-    registrationStore.validate()
+    // registrationStore.validate()
     this.setState({errors: registrationStore.getErrors()})
   }
 
   handleSubmit(event){
     event.preventDefault()
-    this.validate()
+    submitForm()
     console.log(this.state.registration)
   }
 
@@ -46,6 +64,7 @@ class App extends Component {
             <div className='col-xs-6 col-xs-offset-3'>
               <div className='panel panel-default'>
                 <div className='panel-body'>
+                {/*If this is not valid show the text in the div*/}
                   { !this.isValid() &&
                     <div className='alert alert-danger'>
                       Please verify that all fields are filled in below.
